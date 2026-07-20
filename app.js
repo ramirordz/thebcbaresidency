@@ -106,17 +106,20 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.disabled = true;
             submitBtn.textContent = 'Registering reservation...';
             
-            // Prepare ConvertKit form payload
-            const formData = new FormData();
-            formData.append('first_name', preorderForm.querySelector('#first-name').value);
-            formData.append('email_address', preorderForm.querySelector('#email').value);
-            formData.append('fields[last_name]', preorderForm.querySelector('#last-name').value);
-            formData.append('fields[current_role]', preorderForm.querySelector('#current-status').value);
+            // Prepare ConvertKit form payload in url-encoded format
+            const params = new URLSearchParams();
+            params.append('first_name', preorderForm.querySelector('#first-name').value);
+            params.append('email_address', preorderForm.querySelector('#email').value);
+            params.append('fields[last_name]', preorderForm.querySelector('#last-name').value);
+            params.append('fields[current_role]', preorderForm.querySelector('#current-status').value);
             
             // Post to ConvertKit form submission endpoint (mode: no-cors prevents cross-origin blocks)
-            fetch('https://app.convertkit.com/html_forms/9702700/subscriptions', {
+            fetch('https://app.convertkit.com/forms/9702700/subscriptions', {
                 method: 'POST',
-                body: formData,
+                body: params,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
                 mode: 'no-cors'
             })
             .then(() => {
