@@ -97,8 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (preorderForm) {
         preorderForm.addEventListener('submit', (e) => {
-            // Let the browser submit the form naturally to the hidden iframe
-            // (we do not call e.preventDefault() to avoid blocking the submission)
+            e.preventDefault();
             
             const submitBtn = preorderForm.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn.textContent;
@@ -107,27 +106,66 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.disabled = true;
             submitBtn.textContent = 'Registering reservation...';
             
-            // Wait 600ms to allow the browser submission to complete before resetting the inputs
-            setTimeout(() => {
+            // Prepare ConvertKit form payload in url-encoded format
+            const params = new URLSearchParams();
+            params.append('first_name', preorderForm.querySelector('#first-name').value);
+            params.append('email_address', preorderForm.querySelector('#email').value);
+            params.append('fields[last_name]', preorderForm.querySelector('#last-name').value);
+            params.append('fields[current_role]', preorderForm.querySelector('#current-status').value);
+            params.append('ckjs_version', '6');
+            
+            // Post to ConvertKit form submission endpoint (supports CORS natively)
+            fetch('https://app.kit.com/forms/9702700/subscriptions', {
+                method: 'POST',
+                body: params,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': 'application/json',
+                    'X-CKJS-Version': '6'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalBtnText;
 
-                // Show success status
-                if (formMessage) {
-                    formMessage.className = 'form-message success';
-                    formMessage.textContent = 'Thank you! Your spot on the waiting list has been reserved. Please check your email inbox to confirm your subscription and download Chapter 1: "Two Clinicians, One Client".';
-                    formMessage.style.display = 'block';
-                    
-                    preorderForm.reset();
-                    
-                    formMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                if (data.status === 'success') {
+                    // Show success status
+                    if (formMessage) {
+                        formMessage.className = 'form-message success';
+                        formMessage.textContent = 'Thank you! Your spot on the waiting list has been reserved. Please check your email inbox to confirm your subscription and download Chapter 1: "Two Clinicians, One Client".';
+                        formMessage.style.display = 'block';
+                        
+                        preorderForm.reset();
+                        
+                        formMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-                    // Hide status after 10 seconds
-                    setTimeout(() => {
-                        formMessage.style.display = 'none';
-                    }, 10000);
+                        // Hide status after 10 seconds
+                        setTimeout(() => {
+                            formMessage.style.display = 'none';
+                        }, 10000);
+                    }
+                } else {
+                    throw new Error(data.message || 'Form submission failed');
                 }
-            }, 600);
+            })
+            .catch((error) => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalBtnText;
+                
+                if (formMessage) {
+                    formMessage.className = 'form-message error';
+                    formMessage.textContent = 'There was an issue submitting your email. Please try again or contact support.';
+                    formMessage.style.display = 'block';
+                    formMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+                console.error('ConvertKit submission error:', error);
+            });
         });
     }
 });
