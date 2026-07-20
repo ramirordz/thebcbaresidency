@@ -126,16 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Show success status
                 if (formMessage) {
                     formMessage.className = 'form-message success';
-                    formMessage.textContent = 'Thank you! Your spot on the waiting list has been reserved. Your download of Chapter 1: "Two Clinicians, One Client" has started! A backup copy has also been sent to your email.';
+                    formMessage.textContent = 'Thank you! Your spot on the waiting list has been reserved. Please check your email inbox to confirm your subscription and download Chapter 1: "Two Clinicians, One Client".';
                     formMessage.style.display = 'block';
-                    
-                    // Programmatically trigger direct browser download
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = 'The_BCBA_Residency_Chapter_1_Preview.pdf';
-                    downloadLink.download = 'The_BCBA_Residency_Chapter_1_Preview.pdf';
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
                     
                     preorderForm.reset();
                     
