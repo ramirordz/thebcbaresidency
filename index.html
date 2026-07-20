@@ -366,23 +366,26 @@
                     <h2 class="section-title">Get Notified of Publication</h2>
                     <p class="section-desc">Submit your email below to be notified when the manual releases and receive Chapter 1: "Two Clinicians, One Client" immediately as a free preview.</p>
                 </div>
-                <form id="residency-form" class="app-form">
+                <!-- Hidden Iframe to handle form submission without redirecting the page -->
+                <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+                
+                <form id="residency-form" class="app-form" action="https://app.convertkit.com/forms/9702700/subscriptions" method="POST" target="hidden_iframe">
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="first-name" class="form-label">First Name</label>
-                            <input type="text" id="first-name" name="first-name" class="form-input" placeholder="John" required>
+                            <input type="text" id="first-name" name="first_name" class="form-input" placeholder="John" required>
                         </div>
                         <div class="form-group">
                             <label for="last-name" class="form-label">Last Name</label>
-                            <input type="text" id="last-name" name="last-name" class="form-input" placeholder="Doe" required>
+                            <input type="text" id="last-name" name="fields[last_name]" class="form-input" placeholder="Doe" required>
                         </div>
                         <div class="form-group">
                             <label for="email" class="form-label">Email Address</label>
-                            <input type="email" id="email" name="email" class="form-input" placeholder="john.doe@example.com" required>
+                            <input type="email" id="email" name="email_address" class="form-input" placeholder="john.doe@example.com" required>
                         </div>
                         <div class="form-group">
                             <label for="current-status" class="form-label">Your Current Role</label>
-                            <select id="current-status" name="current-status" class="form-select" required>
+                            <select id="current-status" name="fields[current_role]" class="form-select" required>
                                 <option value="" disabled selected>Select your current role</option>
                                 <option value="supervisee">Supervisee (RBT / Graduate Student)</option>
                                 <option value="supervisor">Supervisor (BCBA / Clinical Director)</option>

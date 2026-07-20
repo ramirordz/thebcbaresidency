@@ -97,7 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (preorderForm) {
         preorderForm.addEventListener('submit', (e) => {
-            e.preventDefault();
+            // Let the browser submit the form naturally to the hidden iframe
+            // (we do not call e.preventDefault() to avoid blocking the submission)
             
             const submitBtn = preorderForm.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn.textContent;
@@ -106,23 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.disabled = true;
             submitBtn.textContent = 'Registering reservation...';
             
-            // Prepare ConvertKit form payload in url-encoded format
-            const params = new URLSearchParams();
-            params.append('first_name', preorderForm.querySelector('#first-name').value);
-            params.append('email_address', preorderForm.querySelector('#email').value);
-            params.append('fields[last_name]', preorderForm.querySelector('#last-name').value);
-            params.append('fields[current_role]', preorderForm.querySelector('#current-status').value);
-            
-            // Post to ConvertKit form submission endpoint (mode: no-cors prevents cross-origin blocks)
-            fetch('https://app.convertkit.com/forms/9702700/subscriptions', {
-                method: 'POST',
-                body: params,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                mode: 'no-cors'
-            })
-            .then(() => {
+            // Wait 600ms to allow the browser submission to complete before resetting the inputs
+            setTimeout(() => {
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalBtnText;
 
@@ -141,18 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         formMessage.style.display = 'none';
                     }, 10000);
                 }
-            })
-            .catch((error) => {
-                submitBtn.disabled = false;
-                submitBtn.textContent = originalBtnText;
-                
-                if (formMessage) {
-                    formMessage.className = 'form-message error';
-                    formMessage.textContent = 'There was an issue submitting your email. Please try again or contact support.';
-                    formMessage.style.display = 'block';
-                }
-                console.error('ConvertKit submission error:', error);
-            });
+            }, 600);
         });
     }
 });
