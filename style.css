@@ -219,12 +219,21 @@ header.scrolled {
     font-size: 3.5rem;
     font-weight: 800;
     line-height: 1.15;
-    margin-bottom: 24px;
+    margin-bottom: 12px;
     letter-spacing: -1px;
 }
 
 .hero-title span {
     color: var(--primary);
+}
+
+.hero-subtitle {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+    line-height: 1.35;
+    letter-spacing: -0.015em;
 }
 
 .hero-desc {
